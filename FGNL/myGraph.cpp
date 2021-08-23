@@ -480,6 +480,15 @@ void myGraph::printLoopData(loop_data_node *root,std::ofstream& dotFile){
     		dotFile << dyn_cast<Instruction>(tmp->getInstruction())->getOpcode() << ", ";
 			dotFile << dyn_cast<Instruction>(tmp->getInstruction())->getNumOperands() << ", ";
 			dotFile << infoInst[dyn_cast<Instruction>(tmp->getInstruction())].operand_size << ", ";
+			dotFile << "[";
+			int jj = 0;
+			for(auto e: infoInst[dyn_cast<Instruction>(tmp->getInstruction())].operands){
+				dotFile << e.second;
+				if(jj < (int) infoInst[dyn_cast<Instruction>(tmp->getInstruction())].operands.size() - 1)
+					dotFile << ", ";
+				jj++;
+			}
+			dotFile << "], ";
 			dotFile << infoInst[dyn_cast<Instruction>(tmp->getInstruction())].datatype << ", ";
 			dotFile << infoInst[dyn_cast<Instruction>(tmp->getInstruction())].is_array << ", ";
 			dotFile << infoInst[dyn_cast<Instruction>(tmp->getInstruction())].array_size << ", ";
