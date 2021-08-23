@@ -222,18 +222,19 @@ void myGraph::printSubLoops(loop_data_node *root,std::ofstream& dotFile, int col
 		
     }
     
-    dotFile << "subgraph cluster_L" << std::to_string(root->depth+rand()%1000) << " { \ncolor="<<  "green" <<";\ngraph [penwidth=3];\n";
 		for(int j = 0; j < (int) root->s.bbs.size(); j++){
 			for( const auto& e : infoBB )
     		{
     			if(e.second.BBID == root->s.bbs[j]){
+    				dotFile << "subgraph cluster_" << std::to_string(e.second.BBID+rand()%1000) << " { \ncolor="<< e.second.color <<";\ngraph [penwidth=3];\n";
     				for(int jj = 0; jj < (int) e.second.nodes.size(); jj++)
     					dotFile << "\n" << e.second.nodes[jj] << ";\n";
+    				dotFile << "\n}\n\n" ;
+
     			}
     		
 			}
 		}
-		dotFile << "\n}\n\n" ;	
 
 	dotFile << "\n}\n\n" ;
 }

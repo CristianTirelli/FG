@@ -358,10 +358,6 @@ void addLoop(myGraph *d,loop_data *t,Loop *L, int depth, ScalarEvolution* SE){
             edgeId++;
             n_edges++;
 
-            if(n1 != nullptr && n2!=nullptr){
-              a = new edge(edgeIdNL++, n1, n2);
-              d->addEdgeToCDFGNL(a);
-            }
           }
         }
       }

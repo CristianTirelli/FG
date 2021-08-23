@@ -71,6 +71,7 @@ namespace llvm{
 		  			if(*it == *it2){
 		  				no_delete = false;
 		  				it = root->s.bbs.erase(it);
+		  				break;
 		  			}else{
 		  				it2++;
 		  			}
