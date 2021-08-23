@@ -7,11 +7,11 @@ Custom Flow Graph representation and data extraction
 
 ### Pass usage without extracting information from loops:
 
-> path/to/opt -load /path/to/lib/LLVMFGNL.so -enable-new-pm=0 -printFGNL < code.ll > /dev/null
+> path/to/opt -load /path/to/lib/LLVMFG.so -enable-new-pm=0 -printFGNL < code.ll > /dev/null
 
 ### Pass usage with information from loops:
 
-> path/to/opt -load /path/to/lib/LLVMFGNL.so -enable-new-pm=0 -basic-aa -mem2reg -simplifycfg -loop-simplify -loop-rotate -simplifycfg -instcombine -indvars -da -analyze -printFG < code.ll > /dev/null
+> path/to/opt -load /path/to/lib/LLVMFG.so -enable-new-pm=0 -basic-aa -mem2reg -simplifycfg -loop-simplify -loop-rotate -simplifycfg -instcombine -indvars -da -analyze -printFG < code.ll > /dev/null
 
 ### Pass output:
 
@@ -41,6 +41,9 @@ end innerloopid}
 ...
 end loopid}
 ```
+
+NOTE: `loop_stride`, `trip_count`, `depth` are reliable only with additional pass (`-basic-aa -mem2reg -simplifycfg -loop-simplify -loop-rotate -simplifycfg -instcombine -indvars -da -analyze`)
+
 ### Output Example: 
 
 > dot -Tpng mainFG.dot -o mainFG.png
