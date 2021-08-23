@@ -47,6 +47,14 @@ end loopid}
 
 ![mainFG](https://user-images.githubusercontent.com/26326254/130455742-3fdb5dc6-5a24-435e-bf75-a55116d8c6dc.png)
 
+#### Color table:
+- **Green Box**: Basic Blocks in a Loop
+- **Blue Box**: Basic Blocks outside a Loop
+- **Red Box**: Loop (Nested loops are darker)
+- **Red edge**: Control Flow dependence
+- **Black edge**: Data dependence
+
+
 > cat function_1_loopdata
 
 ```
