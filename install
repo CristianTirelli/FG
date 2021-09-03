@@ -1,0 +1,26 @@
+#!/bin/bash
+
+
+path="$(pwd)"
+
+sudo git clone https://github.com/llvm/llvm-project.git
+
+cd llvm-project
+mkdir build
+cd build
+sudo cmake -DCMAKE_BUILD_TYPE=Release -DLLVM_ENABLE_PROJECTS="clang;polly" -G "Unix Makefiles" ../llvm
+
+sudo make -j2
+sudo make install
+
+echo "add_subdirectory(FG)" >> $path/llvm-project/llvm/lib/Transforms/CMakeLists.txt
+
+sudo cp -r FG $path/llvm-project/llvm/lib/Transforms/
+
+sudo make -j2
+
+
+
+
+
+
