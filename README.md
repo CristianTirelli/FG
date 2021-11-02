@@ -91,3 +91,4 @@ End Loop0 }
 TODO:
 - organize code in functions
 - fix some bug that create wrong cdfg dot file
+- ignore llvm debug instruction
