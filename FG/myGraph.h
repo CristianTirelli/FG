@@ -207,7 +207,7 @@ namespace llvm{
 		void printDDG(std::string filename);
 		void printSCDG(std::string filename);
 		void printCDFGNL(std::string filename);
-		void printStats();
+		void printStats(std::string fname);
 		void printSubLoops(loop_data_node *root,std::ofstream& dotFile, int color, int maxDepth);
 		void printData(std::string filename);
 		void printLoopData(loop_data_node *root, std::ofstream& dotFile);
@@ -218,6 +218,7 @@ namespace llvm{
 		int id;
 		std::string name;
 		std::string color;
+		std::string style;
 		Value* inst;
 		Argument* arg;
 
@@ -243,13 +244,15 @@ namespace llvm{
 	class edge{
 		int id;
 		std::string color;
+		std::string style;
 		node* to;
 		node* from;
 
 	public:
-		edge(int id, node *to, node *from, std::string color = "black");
+		edge(int id, node *to, node *from, std::string color = "black", std::string style = "solid");
 		virtual ~edge();
 		std::string getColor();
+		std::string getStyle();
 		node* getFrom();
 		node* getTo();
 	};

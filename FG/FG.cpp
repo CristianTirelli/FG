@@ -208,7 +208,7 @@ void addLoop(myGraph *d,loop_data *t,Loop *L, int depth, ScalarEvolution* SE){
       d->addNode(n);
       name = "";
     }
-    
+
     //Add entry node after the arguments to have less problems in the printing of the dot file
     n = new node(nodeId++, "ENTRY", (Instruction* )nullptr);
     d->addNode(n);
@@ -221,12 +221,13 @@ void addLoop(myGraph *d,loop_data *t,Loop *L, int depth, ScalarEvolution* SE){
         I.print(rso);
         //If the Instruction is "alloca", check for array declaration and save number of elements in array
         if (AllocaInst *AI = dyn_cast<AllocaInst>(&I)){
-          Type *myarr = AI->getType()->getArrayElementType();
-          if(myarr->isArrayTy()){
+          if(AI->getType()->isArrayTy()){
+            Type *myarr = AI->getType()->getArrayElementType();
             d->infoInst[&I].is_array = true;
             d->infoInst[&I].array_size = (long) data.getTypeAllocSize(myarr)/4;
           }
         }
+
 
         //Assign to each instruction the corrisponding C code, by appending to name the associate line of code
         //NOTE: When compiling with optimization eg -O3 this relation is not garanted
@@ -268,7 +269,6 @@ void addLoop(myGraph *d,loop_data *t,Loop *L, int depth, ScalarEvolution* SE){
       bbID++;
 
     }
-
     loopID = 0;
     int depth = 0;
     //add all the loops to myDFG
@@ -379,12 +379,48 @@ void addLoop(myGraph *d,loop_data *t,Loop *L, int depth, ScalarEvolution* SE){
         }
       }
     }
-
+    for(BasicBlock &B: F){
+      for(Instruction &I: B){
+        //get all instruction that compute an address for an array (example a[2])
+        if (GetElementPtrInst *gep = dyn_cast<GetElementPtrInst>(&I)){
+          //get array or structure base address
+          //pred inst is load if array/structure is a function argument (not sure if always but seems so)
+          if (LoadInst *addv = dyn_cast<LoadInst>(gep->getPointerOperand())){
+            //the function parameter is put in a local variable with a store in the addv variable
+            //to get the parameter associate to the local variable we should look for the store instruction that
+            //uses addv, so we iterate on the def-use chain of addv and we find at the first store instruction
+            //this should be the only store instruction of the chain since to access the array llvm uses the gep
+            if (AllocaInst *allinst = dyn_cast<AllocaInst>(addv->getPointerOperand())){
+              for (User *U: allinst->users())
+              { 
+                //create adge from the store instruction to the argument
+                if (StoreInst *sinst = dyn_cast<StoreInst>(U)) { 
+                  node *n1, *n2;
+                  n1 = d->getNode(dyn_cast<Argument>(sinst->getValueOperand()));
+                  n2 = d->getNode(&I);
+                  a = new edge(edgeId,n1,n2,std::string("gold"),std::string("dashed"));
+                  d->addEdgeToCFG(a);
+                  d->addEdgeToDDG(a);
+                }
+              }
+            }
+          //if local array then the pred inst is and alloca
+          }else if(AllocaInst *allinst = dyn_cast<AllocaInst>(gep->getPointerOperand())){
+            //should add arrows also for local array?
+            node *n1, *n2;
+            n1 = d->getNode(allinst);
+            n2 = d->getNode(&I);
+            a = new edge(edgeId,n1,n2,std::string("darkgreen"),std::string("dashed"));
+            d->addEdgeToCFG(a);
+            d->addEdgeToDDG(a);
+          }
+        }
+      }
+    }
 
     n = new node(nodeId++, "EXIT", (Instruction *) nullptr);
     d->addNode(n);
 
-    d->printData(F.getName().str());
     std::ofstream dotFile;
     std::string filename;
     filename.append(std::string(F.getName().str())+std::string("loopdata"));
@@ -394,6 +430,7 @@ void addLoop(myGraph *d,loop_data *t,Loop *L, int depth, ScalarEvolution* SE){
       d->printLoopData(loops[i]->getRoot(), dotFile);
     }
     dotFile.close();
+    d->printStats(F.getName().str());
     d->printDot(std::string("getinfo")+F.getName().str());
     delete d;
 

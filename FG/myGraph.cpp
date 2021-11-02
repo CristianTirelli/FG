@@ -4,12 +4,13 @@
 using namespace llvm;
 
 /*************************************ARC*************************************/
-edge::edge(int id, node* to,node* from, std::string color)
+edge::edge(int id, node* to,node* from, std::string color, std::string style)
 {
 	this->id = id;
 	this->to = to;
   	this->from = from;
   	this->color = color;
+  	this->style = style;
 }
 
 edge::~edge()
@@ -28,6 +29,10 @@ node* edge::getFrom(){
 
 std::string edge::getColor(){
 	return this->color;
+}
+
+std::string edge::getStyle(){
+	return this->style;
 }
 
 /************************************NODE************************************/
@@ -255,7 +260,7 @@ void myGraph::printDot(std::string filename)
 	//print dfg_edges
 	for (size_t i = 0; i < dfg_edges.size(); i++){
 		if (dfg_edges[i]->getFrom() != nullptr && dfg_edges[i]->getTo() != nullptr)
-			dotFile << dfg_edges[i]->getFrom()->getId() << " -> " << dfg_edges[i]->getTo()->getId() << " [color="<< dfg_edges[i]->getColor() <<"]\n";
+			dotFile << dfg_edges[i]->getFrom()->getId() << " -> " << dfg_edges[i]->getTo()->getId() << " [color="<< dfg_edges[i]->getColor() <<", style=" << dfg_edges[i]->getStyle() <<"]\n";
 		else 
 			errs()<< dfg_edges[i] << "\n";
 
@@ -264,7 +269,7 @@ void myGraph::printDot(std::string filename)
 	//print cfg_edges
 	for (size_t i = 0; i < cfg_edges.size(); i++){
 		if (cfg_edges[i]->getFrom() != nullptr && cfg_edges[i]->getTo() != nullptr)
-			dotFile << cfg_edges[i]->getFrom()->getId() << " -> " << cfg_edges[i]->getTo()->getId() << " [color="<< cfg_edges[i]->getColor() <<"]\n";
+			dotFile << cfg_edges[i]->getFrom()->getId() << " -> " << cfg_edges[i]->getTo()->getId() << " [color="<< cfg_edges[i]->getColor() <<", style=" << cfg_edges[i]->getStyle() <<"]\n";
 		else 
 			errs()<< cfg_edges[i] << "\n";
 
@@ -504,3 +509,28 @@ void myGraph::printLoopData(loop_data_node *root,std::ofstream& dotFile){
     dotFile << "\nEnd Loop"<< root->id<<" }\n";
 	
 }
+
+
+void myGraph::printStats(std::string fname){
+
+	std::map<BasicBlock *, stats_BB>::iterator it;
+	std::ofstream dotFile;
+	dotFile.open(fname+std::string("stats"));
+	dotFile << fname <<"{\n";
+	for(it = infoBB.begin(); it != infoBB.end(); it++){
+		std::map<std::string, int>::iterator itop;
+		dotFile << "BB" << it->second.BBID << "[";
+		dotFile << it->second.nodes.size() << ", ";
+		dotFile << it->second.in_loop << ", [";
+		for(itop = it->second.operations.begin(); itop != it->second.operations.end(); itop++){
+			dotFile << "("<<itop->first << ":" << itop->second << "), ";
+		}
+		dotFile << "(others: 0)";
+		dotFile << "]]\n";
+	}
+	dotFile << "}\n";
+
+
+}
+
+

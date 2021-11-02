@@ -44,6 +44,16 @@ end loopid}
 
 NOTE: `loop_stride`, `trip_count`, `depth` are reliable only with additional pass (`-basic-aa -mem2reg -simplifycfg -loop-simplify -loop-rotate -simplifycfg -instcombine -indvars -da -analyze`)
 
+### Stats Data Format:
+
+```
+FunctionName{
+BB0[#nodes_in_bb0,in_loop_bb0,[(inst1:#inst1),(inst2:#inst2),..,(otherinst:0)]]
+BB1[#nodes_in_bb1,in_loop_bb1,[(inst1:#inst1),(inst2:#inst2),..,(otherinst:0)]]
+...
+}
+```
+
 ### Output Example: 
 
 > dot -Tpng mainFG.dot -o mainFG.png
@@ -56,6 +66,9 @@ NOTE: `loop_stride`, `trip_count`, `depth` are reliable only with additional pas
 - **Red Box**: Loop (Nested loops are darker)
 - **Red edge**: Control Flow dependence
 - **Black edge**: Data dependence
+- **Gold edge**: Data dependence that refers to a function argument
+- **Gold dashed edge**: Reference to the base address of an array/structure that is a function parameter
+- **Darkgreen dashed edge**: Reference to the base address of an local array/structure 
 
 
 > cat function_1_loopdata
@@ -75,3 +88,6 @@ End Loop0 }
 ```
 
 
+TODO:
+- organize code in functions
+- fix some bug that create wrong cdfg dot file
